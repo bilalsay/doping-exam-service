@@ -1,4 +1,4 @@
-# doping-exam-service
+# doping-exam-service as a Hexagonal Architecture case study
 
 # CreateStudent
 POST http://localhost:8080/students
