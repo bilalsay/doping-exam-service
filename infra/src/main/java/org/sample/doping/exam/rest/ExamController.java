@@ -9,6 +9,7 @@ import org.sample.doping.common.DataResponse;
 import org.sample.doping.common.Response;
 import org.sample.doping.exam.model.Exam;
 import org.sample.doping.exam.model.Question;
+import org.sample.doping.exam.rest.dto.CompleteExamRequest;
 import org.sample.doping.exam.rest.dto.CreateExamRequest;
 import org.sample.doping.exam.rest.dto.ExamDto;
 import org.sample.doping.exam.rest.dto.QuestionDto;
@@ -49,7 +50,7 @@ public class ExamController extends BaseController {
         var retrieveExamQuestionsUseCase = RetrieveExamQuestionsUseCase.builder()
                 .examId(examId)
                 .build();
-        var questions = ((List<Question>) publish(List.class, RetrieveExamQuestionsUseCase.builder().examId(examId).build())).stream()
+        var questions = ((List<Question>) publish(List.class, retrieveExamQuestionsUseCase)).stream()
                 .map(QuestionDto::fromModel)
                 .collect(Collectors.toList());
 
@@ -60,6 +61,12 @@ public class ExamController extends BaseController {
     public void takeExam(@RequestBody @Valid TakeExamRequest takeExamRequest) {
         var createExamUseCase = takeExamRequest.toUseCase();
         publish(createExamUseCase);
+    }
+
+    @PostMapping("/complete")
+    public void completeExam(@RequestBody @Valid CompleteExamRequest completeExamRequest) {
+        var completeExamUseCase = completeExamRequest.toUseCase();
+        publish(completeExamUseCase);
     }
 
 }

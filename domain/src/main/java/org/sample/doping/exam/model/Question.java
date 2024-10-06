@@ -1,14 +1,19 @@
 package org.sample.doping.exam.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
 @Builder
-public class Question {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Question implements Serializable {
 
     private Long id;
 

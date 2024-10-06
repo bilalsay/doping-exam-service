@@ -2,9 +2,11 @@ package org.sample.doping;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,6 +48,54 @@ class StudentDataAdapterTest {
 
         // then
         verify(studentRepository, times(1)).save(studentEntity);
+    }
+
+    @Test
+    void should_return_student() {
+        // given
+        var studentId = 1L;
+
+        var studentEntity = StudentEntity.builder()
+                .name("name")
+                .surname("surname")
+                .number("12345")
+                .build();
+
+        when(studentRepository.findById(studentId))
+                .thenReturn(Optional.of(studentEntity));
+
+        // when
+        var student = studentDataAdapter.retrieveStudent(studentId);
+
+        assertNotNull(student);
+        assertEquals(student.get().getName(), studentEntity.getName());
+
+        // then
+        verify(studentRepository, times(1)).findById(studentId);
+    }
+
+    @Test
+    void should_return_student_by_number() {
+        // given
+        var studentNumber = "123456";
+
+        var studentEntity = StudentEntity.builder()
+                .name("name")
+                .surname("surname")
+                .number("12345")
+                .build();
+
+        when(studentRepository.findStudentByNumber(studentNumber))
+                .thenReturn(Optional.of(studentEntity));
+
+        // when
+        var student = studentDataAdapter.findStudentByNumber(studentNumber);
+
+        assertNotNull(student);
+        assertEquals(student.get().getName(), studentEntity.getName());
+
+        // then
+        verify(studentRepository, times(1)).findStudentByNumber(studentNumber);
     }
 
 }

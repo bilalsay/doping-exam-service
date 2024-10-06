@@ -29,4 +29,12 @@ public class ExamDto {
                 .questions(questions)
                 .build();
     }
+
+    public static ExamDto fromModel(Exam exam) {
+        return ExamDto.builder()
+                .id(exam.getId())
+                .name(exam.getName())
+                .questions(exam.getQuestions())
+                .build();
+    }
 }

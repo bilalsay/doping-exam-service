@@ -24,10 +24,11 @@ public class StudentDataAdapter implements StudentPort {
     @Override
     @Transactional
     public Student saveStudent(Student student) {
-        var studentEntity = new StudentEntity();
-        studentEntity.setName(student.getName());
-        studentEntity.setSurname(student.getSurname());
-        studentEntity.setNumber(student.getNumber());
+        var studentEntity = StudentEntity.builder()
+                .name(student.getName())
+                .surname(student.getSurname())
+                .number(student.getNumber())
+                .build();
         return studentJpaRepository.save(studentEntity).toModel();
     }
 

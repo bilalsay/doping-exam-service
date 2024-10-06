@@ -1,6 +1,8 @@
 package org.sample.doping.exam.jpa;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.sample.doping.exam.jpa.entity.ExamEntity;
 import org.sample.doping.exam.jpa.entity.QuestionEntity;
@@ -9,6 +11,8 @@ import org.sample.doping.exam.jpa.repository.ExamRepository;
 import org.sample.doping.exam.jpa.repository.QuestionRepository;
 import org.sample.doping.exam.jpa.repository.StudentExamRepository;
 import org.sample.doping.exam.model.Exam;
+import org.sample.doping.exam.model.Question;
+import org.sample.doping.exam.model.StudentExam;
 import org.sample.doping.exam.port.ExamPort;
 import org.sample.doping.student.jpa.entity.StudentEntity;
 import org.sample.doping.student.model.Student;
@@ -41,13 +45,7 @@ public class ExamDataAdapter implements ExamPort {
         examRepository.save(examEntity);
 
         var questions = exam.getQuestions().stream()
-                .map(question -> QuestionEntity.builder()
-                        .number(question.getNumber())
-                        .text(question.getText())
-                        .exam(examEntity)
-                        .selections(question.getSelections())
-                        .correctSelection(question.getCorrectSelection())
-                        .build())
+                .map(question -> getQuestionEntity(question, examEntity))
                 .toList();
 
         questionRepository.saveAll(questions);
@@ -65,5 +63,44 @@ public class ExamDataAdapter implements ExamPort {
                 .exam(examEntity)
                 .build();
         studentExamRepository.save(studentExam);
+    }
+
+    @Override
+    public List<StudentExam> retrieveStudentExams(Long studentId) {
+        return studentExamRepository.findAllByStudentId(studentId).stream()
+                .map(StudentExamEntity::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<StudentExam> retrieveStudentExam(Long studentId, Long examId) {
+        return studentExamRepository.findByStudentIdAndExamId(studentId, examId)
+                .map(StudentExamEntity::toModel);
+    }
+
+    @Override
+    public void completeStudentExam(StudentExam studentExam) {
+        var examEntity = new ExamEntity();
+        examEntity.setId(studentExam.getExam().getId());
+
+        var studentEntity = new StudentEntity();
+        studentEntity.setId(studentExam.getStudent().getId());
+
+        var studentExamEntity = new StudentExamEntity();
+        studentExamEntity.setId(studentExam.getId());
+        studentExamEntity.setStudent(studentEntity);
+        studentExamEntity.setExam(examEntity);
+        studentExamEntity.setAnswers(studentExam.getAnswers());
+        studentExamRepository.save(studentExamEntity);
+    }
+
+    private QuestionEntity getQuestionEntity(Question question, ExamEntity examEntity) {
+        return QuestionEntity.builder()
+                .number(question.getNumber())
+                .text(question.getText())
+                .exam(examEntity)
+                .selections(question.getSelections())
+                .correctSelection(question.getCorrectSelection())
+                .build();
     }
 }

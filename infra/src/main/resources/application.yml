@@ -30,3 +30,12 @@ spring:
 
 server:
   port: 8080
+
+couchbase:
+  properties:
+    username: Administrator
+    password: admin1
+    connection-string: couchbase://127.0.0.1
+    bucket-name: doping
+    scope-name: exam
+    cacheable-collection: cache-collection

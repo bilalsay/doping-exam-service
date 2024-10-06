@@ -7,6 +7,7 @@ import org.sample.doping.exam.jpa.entity.QuestionEntity;
 import org.sample.doping.exam.jpa.repository.QuestionRepository;
 import org.sample.doping.exam.model.Question;
 import org.sample.doping.exam.port.QuestionPort;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,9 @@ public class QuestionDataAdapter implements QuestionPort {
     private final QuestionRepository questionRepository;
 
     @Override
+    @Cacheable(value = "ONE_HOUR",
+            key = "{#root.targetClass.name, #examId}",
+            unless = "#result == null")
     public List<Question> retrieveExamQuestions(Long examId) {
         return questionRepository.findAllByExamId(examId).stream()
                 .map(QuestionEntity::toModel)
